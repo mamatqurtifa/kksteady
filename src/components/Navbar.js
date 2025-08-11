@@ -381,16 +381,6 @@ export default function Navbar() {
               </div>
             )}
           </div>
-
-          {/* Menu Footer */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-r from-gray-50/95 to-white/95 border-t border-gray-100 backdrop-blur-sm">
-            <div className="text-center group">
-              <p className="text-xs sm:text-sm text-gray-600 group-hover:text-gray-700 transition-all duration-500">
-                Made with <span className="inline-block group-hover:scale-125 group-hover:animate-pulse transition-all duration-500">❤️</span> by{' '}
-                <span className="font-bold text-red-500 group-hover:text-red-600 group-hover:scale-105 inline-block transition-all duration-500">Steady Team</span>
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </>
