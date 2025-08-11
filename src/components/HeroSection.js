@@ -7,7 +7,7 @@ export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
-  const [mounted, setMounted] = useState(false); // Added to prevent SSR issues
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true)
@@ -67,7 +67,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Gradient Orbs */}
         <div
-          className="absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-r from-steady-red/10 to-steady-blue/10 rounded-full blur-xl animate-pulse"
+          className="absolute top-1/4 right-1/4 w-32 h-32 bg-[#EC5E65]/10 rounded-full blur-xl animate-pulse"
           style={{
             transform: `translate(${mousePosition.x * 0.05}px, ${
               mousePosition.y * 0.05
@@ -75,7 +75,7 @@ export default function HeroSection() {
           }}
         />
         <div
-          className="absolute bottom-1/4 left-1/4 w-40 h-40 bg-gradient-to-r from-steady-yellow/10 to-steady-blue/10 rounded-full blur-2xl animate-float"
+          className="absolute bottom-1/4 left-1/4 w-40 h-40 bg-[#90D1E8]/10 rounded-full blur-2xl animate-float"
           style={{
             transform: `translate(${mousePosition.x * -0.03}px, ${
               mousePosition.y * -0.04
@@ -94,14 +94,11 @@ export default function HeroSection() {
               : "opacity-0 transform translate-y-8"
           }`}
         >
-          {/* Logo Glow Effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-steady-red/20 via-steady-yellow/20 to-steady-blue/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 scale-110 animate-pulse"></div>
-
-          {/* Main Logo */}
+          {/* Main Logo - Responsive sizing */}
           <img
             src="/images/Steady-Main-Logo-Reflect.png"
             alt="Steady Main Logo"
-            className={`h-36 sm:h-44 md:h-60 lg:h-80 xl:h-96 min-w-[280px] sm:min-w-[340px] transition-all duration-700 group-hover:scale-105 animate-float relative z-10`}
+            className={`h-32 sm:h-40 md:h-48 lg:h-64 xl:h-80 w-auto max-w-[90vw] transition-all duration-700 group-hover:scale-105 animate-float relative z-10`}
             style={{
               transform: `translateY(${Math.sin(scrollY * 0.01) * 5}px)`,
             }}
@@ -116,18 +113,12 @@ export default function HeroSection() {
               : "opacity-0 transform translate-y-8"
           }`}
         >
-          <h1 className="text-steady-grey text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
+          <h1 className="text-gray-800 text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold tracking-wide leading-tight px-4">
             Stembayo Education Advertising Documentation Society
           </h1>
-
-          {/* Subtitle */}
-          <p className="text-steady-grey/80 text-sm sm:text-base md:text-lg mt-4 max-w-2xl mx-auto leading-relaxed">
-            Empowering minds through innovative education and creative
-            documentation
-          </p>
         </div>
 
-        {/* Interactive Elements */}
+        {/* Interactive Elements - Fixed to single row on mobile */}
         <div
           className={`flex flex-col items-center space-y-6 transition-all duration-1000 delay-500 ${
             isVisible
@@ -135,34 +126,38 @@ export default function HeroSection() {
               : "opacity-0 transform translate-y-8"
           }`}
         >
-          {/* Stats or Features */}
-          <div className="flex flex-wrap justify-center gap-6 mt-8">
+          {/* Stats or Features - Compact mobile layout */}
+          <div className="flex justify-center items-center gap-2 sm:gap-4 mt-6 w-full max-w-sm sm:max-w-2xl px-4">
             {[
-              { icon: BookOpen, label: "Education", color: "text-steady-blue" },
+              { icon: BookOpen, label: "Education", color: "text-[#90D1E8]", bgColor: "bg-[#90D1E8]/10", borderColor: "border-[#90D1E8]/30" },
               {
                 icon: Megaphone,
                 label: "Advertising",
-                color: "text-steady-yellow",
+                color: "text-[#F7C961]",
+                bgColor: "bg-[#F7C961]/10",
+                borderColor: "border-[#F7C961]/30"
               },
               {
                 icon: FileText,
                 label: "Documentation",
-                color: "text-steady-red",
+                color: "text-[#EC5E65]",
+                bgColor: "bg-[#EC5E65]/10",
+                borderColor: "border-[#EC5E65]/30"
               },
             ].map((item, index) => {
               const IconComponent = item.icon;
               return (
                 <div
                   key={index}
-                  className={`group flex flex-col items-center space-y-2 p-4 rounded-2xl border-2 border-gray-100/50 bg-white/50 backdrop-blur-sm hover:bg-white/80 hover:border-gray-200/70 hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer`}
+                  className={`group flex flex-col items-center justify-center space-y-1 sm:space-y-2 p-2 sm:p-3 md:p-4 rounded-xl border ${item.borderColor} ${item.bgColor} hover:shadow-lg transition-all duration-500 hover:scale-105 cursor-pointer flex-1 min-w-0`}
                   style={{
                     animationDelay: `${index * 200}ms`,
                   }}
                 >
                   <IconComponent
-                    className={`w-8 h-8 ${item.color} group-hover:scale-125 transition-all duration-300`}
+                    className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 ${item.color} group-hover:scale-110 transition-all duration-300`}
                   />
-                  <span className="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors duration-300">
+                  <span className={`font-semibold text-xs sm:text-sm md:text-base ${item.color} group-hover:scale-105 transition-all duration-300 text-center`}>
                     {item.label}
                   </span>
                 </div>
@@ -173,14 +168,14 @@ export default function HeroSection() {
           {/* Scroll Indicator */}
           <button
             onClick={scrollToNext}
-            className="group flex flex-col items-center space-y-2 mt-12 transition-all duration-500 hover:transform hover:translate-y-1 cursor-pointer"
+            className="group flex flex-col items-center space-y-2 mt-8 transition-all duration-500 hover:transform hover:translate-y-1 cursor-pointer"
           >
-            <span className="text-steady-grey/60 text-sm font-medium group-hover:text-steady-blue transition-all duration-300">
+            <span className="text-gray-500 text-sm font-medium group-hover:text-[#90D1E8] transition-all duration-300">
               Scroll to explore
             </span>
             <div className="relative">
-              <ChevronDown className="w-8 h-8 text-steady-grey/40 group-hover:text-steady-blue animate-bounce group-hover:scale-110 transition-all duration-300" />
-              <div className="absolute inset-0 bg-steady-blue/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <ChevronDown className="w-6 h-6 text-gray-400 group-hover:text-[#90D1E8] animate-bounce group-hover:scale-110 transition-all duration-300" />
+              <div className="absolute inset-0 bg-[#90D1E8]/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
             </div>
           </button>
         </div>
@@ -192,7 +187,7 @@ export default function HeroSection() {
       {/* Interactive Mouse Trail Effect */}
       {typeof window !== 'undefined' && (
         <div
-          className="fixed w-6 h-6 bg-steady-blue/20 rounded-full blur-sm pointer-events-none z-0 transition-all duration-300"
+          className="fixed w-6 h-6 bg-[#90D1E8]/20 rounded-full blur-sm pointer-events-none z-0 transition-all duration-300"
           style={{
             left: (mousePosition.x * window.innerWidth) / 100 - 12,
             top: (mousePosition.y * window.innerHeight) / 100 - 12,

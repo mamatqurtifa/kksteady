@@ -300,9 +300,6 @@ export default function Navbar() {
                   {/* Underline effect */}
                   <div className={`absolute bottom-0 left-0 w-0 h-1 ${item.underlineColor} group-hover:w-full transition-all duration-700 rounded-full`}></div>
                   
-                  {/* Left border accent */}
-                  <div className={`absolute left-0 top-1/2 w-0 h-0 ${item.underlineColor} group-hover:w-1 group-hover:h-12 transition-all duration-700 rounded-r-full transform -translate-y-1/2`}></div>
-                  
                   <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 relative z-10`}>
                     <IconComponent className={`w-6 h-6 sm:w-7 sm:h-7 ${item.color} group-hover:scale-125 group-hover:-rotate-6 transition-all duration-700 filter group-hover:drop-shadow-lg`} />
                     {/* Icon glow effect */}
