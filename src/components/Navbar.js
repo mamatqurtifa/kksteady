@@ -19,6 +19,7 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState([])
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [mounted, setMounted] = useState(false) // Added to prevent SSR issues
 
   const menuItems = {
     Home: { id: "home", icon: Home, color: "text-blue-600", underlineColor: "bg-blue-600" },
@@ -27,16 +28,25 @@ export default function Navbar() {
     Activities: { id: "activities", icon: Target, color: "text-red-500", underlineColor: "bg-red-500" }
   }
 
-  // Handle scroll effect
+  // Handle mounting and scroll effect
   useEffect(() => {
+    setMounted(true)
+    
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
+      if (typeof window !== 'undefined') {
+        setScrolled(window.scrollY > 20)
+      }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll)
+      return () => window.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
   const scrollTo = (id) => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return
+    
     const element = document.getElementById(id)
     if (element) {
       const startY = window.pageYOffset
@@ -68,10 +78,12 @@ export default function Navbar() {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
     // Prevent body scroll when menu is open
-    if (!isMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
+    if (typeof document !== 'undefined') {
+      if (!isMenuOpen) {
+        document.body.style.overflow = 'hidden'
+      } else {
+        document.body.style.overflow = 'unset'
+      }
     }
   }
 
@@ -96,13 +108,20 @@ export default function Navbar() {
     setSearchResults([])
     setIsMenuOpen(false)
     setIsSearchFocused(false)
-    document.body.style.overflow = 'unset'
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'unset'
+    }
   }
 
   const closeMenu = () => {
     setIsMenuOpen(false)
-    document.body.style.overflow = 'unset'
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'unset'
+    }
   }
+
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) return null
 
   return (
     <>
@@ -112,6 +131,7 @@ export default function Navbar() {
           ? 'bg-white/90 backdrop-blur-xl shadow-xl border-b border-gray-200/60' 
           : 'bg-white/95 backdrop-blur-sm shadow-lg'
       }`}>
+        {/* Rest of your navbar JSX remains exactly the same */}
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 md:h-18 lg:h-20">
             
@@ -232,7 +252,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - rest of JSX remains same */}
       <div className={`lg:hidden fixed inset-0 z-40 transition-all duration-500 ${
         isMenuOpen ? 'visible' : 'invisible'
       }`}>

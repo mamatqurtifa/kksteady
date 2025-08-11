@@ -7,38 +7,56 @@ export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
+  const [mounted, setMounted] = useState(false); // Added to prevent SSR issues
 
   useEffect(() => {
+    setMounted(true)
+    
     // Trigger entrance animations
     const timer = setTimeout(() => setIsVisible(true), 300);
 
     // Mouse tracking for parallax
     const handleMouseMove = (e) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100,
-      });
+      if (typeof window !== 'undefined') {
+        setMousePosition({
+          x: (e.clientX / window.innerWidth) * 100,
+          y: (e.clientY / window.innerHeight) * 100,
+        });
+      }
     };
 
     // Scroll tracking for parallax
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      if (typeof window !== 'undefined') {
+        setScrollY(window.scrollY);
+      }
+    };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("scroll", handleScroll);
+    if (typeof window !== 'undefined') {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("scroll", handleScroll);
+    }
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("scroll", handleScroll);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("scroll", handleScroll);
+      }
     };
   }, []);
 
   const scrollToNext = () => {
-    const nextSection = document.getElementById("about");
-    if (nextSection) {
-      nextSection.scrollIntoView({ behavior: "smooth" });
+    if (typeof document !== 'undefined') {
+      const nextSection = document.getElementById("about");
+      if (nextSection) {
+        nextSection.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
+
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) return null;
 
   return (
     <div
@@ -172,14 +190,16 @@ export default function HeroSection() {
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/80 to-transparent pointer-events-none"></div>
 
       {/* Interactive Mouse Trail Effect */}
-      <div
-        className="fixed w-6 h-6 bg-steady-blue/20 rounded-full blur-sm pointer-events-none z-0 transition-all duration-300"
-        style={{
-          left: (mousePosition.x * window.innerWidth) / 100 - 12,
-          top: (mousePosition.y * window.innerHeight) / 100 - 12,
-          opacity: mousePosition.x > 0 ? 0.6 : 0,
-        }}
-      />
+      {typeof window !== 'undefined' && (
+        <div
+          className="fixed w-6 h-6 bg-steady-blue/20 rounded-full blur-sm pointer-events-none z-0 transition-all duration-300"
+          style={{
+            left: (mousePosition.x * window.innerWidth) / 100 - 12,
+            top: (mousePosition.y * window.innerHeight) / 100 - 12,
+            opacity: mousePosition.x > 0 ? 0.6 : 0,
+          }}
+        />
+      )}
     </div>
   );
 }
