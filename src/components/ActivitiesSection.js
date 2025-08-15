@@ -103,7 +103,7 @@ export default function ActivitiesSection() {
         </h2>
         <div className="w-24 sm:w-32 h-1 bg-[#EC5E65] mx-auto rounded-full mb-4"></div>
         <p className="text-gray-600 text-lg sm:text-xl lg:text-2xl">
-          Let's discover our activities
+          Let&apos;s discover our activities
         </p>
       </div>
 
