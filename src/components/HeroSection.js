@@ -6,7 +6,7 @@ import { ChevronDown, BookOpen, Megaphone, FileText } from "lucide-react";
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [scrollY, setScrollY] = useState(0);
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function HeroSection() {
     // Trigger entrance animations
     const timer = setTimeout(() => setIsVisible(true), 300);
 
-    // Mouse tracking for parallax
+    // Mouse tracking for logo interactions
     const handleMouseMove = (e) => {
       if (typeof window !== 'undefined') {
         setMousePosition({
@@ -25,23 +25,14 @@ export default function HeroSection() {
       }
     };
 
-    // Scroll tracking for parallax
-    const handleScroll = () => {
-      if (typeof window !== 'undefined') {
-        setScrollY(window.scrollY);
-      }
-    };
-
     if (typeof window !== 'undefined') {
       window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("scroll", handleScroll);
     }
 
     return () => {
       clearTimeout(timer);
       if (typeof window !== 'undefined') {
         window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("scroll", handleScroll);
       }
     };
   }, []);
@@ -55,35 +46,32 @@ export default function HeroSection() {
     }
   };
 
+  // Calculate logo transformation based on mouse position when hovered
+  const getLogoTransform = () => {
+    if (!isLogoHovered || !mounted) return 'translateY(0px) rotateX(0deg) rotateY(0deg) scale(1)';
+    
+    // Calculate movement based on mouse position (more subtle)
+    const moveX = (mousePosition.x - 50) * 0.3; // -15 to +15px
+    const moveY = (mousePosition.y - 50) * 0.2; // -10 to +10px
+    
+    // Calculate rotation based on mouse position (very subtle)
+    const rotateX = (mousePosition.y - 50) * 0.1; // -5 to +5 degrees
+    const rotateY = (mousePosition.x - 50) * -0.1; // -5 to +5 degrees (inverted)
+    
+    // Scale slightly when hovered
+    const scale = 1.05;
+    
+    return `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
+  };
+
   // Don't render until mounted to prevent hydration mismatch
   if (!mounted) return null;
 
   return (
     <div
-      className="relative flex flex-col justify-center items-center min-h-screen pt-16 pb-8 lg:h-auto lg:pt-48 overflow-hidden bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30"
+      className="relative flex flex-col justify-center items-center min-h-screen pt-16 pb-8 lg:h-auto lg:pt-48 overflow-hidden bg-white"
       id="home"
     >
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Gradient Orbs */}
-        <div
-          className="absolute top-1/4 right-1/4 w-32 h-32 bg-[#EC5E65]/10 rounded-full blur-xl animate-pulse"
-          style={{
-            transform: `translate(${mousePosition.x * 0.05}px, ${
-              mousePosition.y * 0.05
-            }px) scale(${1 + Math.sin(scrollY * 0.01) * 0.1})`,
-          }}
-        />
-        <div
-          className="absolute bottom-1/4 left-1/4 w-40 h-40 bg-[#90D1E8]/10 rounded-full blur-2xl animate-float"
-          style={{
-            transform: `translate(${mousePosition.x * -0.03}px, ${
-              mousePosition.y * -0.04
-            }px)`,
-          }}
-        />
-      </div>
-
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center space-y-8 px-4">
         {/* Logo Container */}
@@ -94,15 +82,39 @@ export default function HeroSection() {
               : "opacity-0 transform translate-y-8"
           }`}
         >
-          {/* Main Logo - Responsive sizing */}
-          <img
-            src="/images/Steady-Main-Logo-Reflect.png"
-            alt="Steady Main Logo"
-            className={`h-32 sm:h-40 md:h-48 lg:h-64 xl:h-80 w-auto max-w-[90vw] transition-all duration-700 group-hover:scale-105 animate-float relative z-10`}
-            style={{
-              transform: `translateY(${Math.sin(scrollY * 0.01) * 5}px)`,
-            }}
-          />
+          {/* Main Logo - Interactive with mouse movement */}
+          <div 
+            className="relative cursor-pointer"
+            onMouseEnter={() => setIsLogoHovered(true)}
+            onMouseLeave={() => setIsLogoHovered(false)}
+          >
+            {/* Glow effect that appears on hover */}
+            <div 
+              className={`absolute inset-0 bg-gradient-to-r from-[#EC5E65]/10 via-[#F7C961]/10 to-[#90D1E8]/10 rounded-full blur-3xl transition-all duration-700 ${
+                isLogoHovered ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
+              }`}
+            />
+            
+            <img
+              src="/images/Steady-Main-Logo-Reflect.png"
+              alt="Steady Main Logo"
+              className="h-32 sm:h-40 md:h-48 lg:h-64 xl:h-80 w-auto max-w-[90vw] relative z-10 transition-all duration-500 ease-out"
+              style={{
+                transform: getLogoTransform(),
+                transformStyle: 'preserve-3d',
+              }}
+            />
+            
+            {/* Subtle shadow that appears on hover */}
+            <div 
+              className={`absolute inset-0 bg-black/5 rounded-full blur-2xl transition-all duration-700 -z-10 ${
+                isLogoHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
+              }`}
+              style={{
+                transform: `translate(${(mousePosition.x - 50) * 0.1}px, ${(mousePosition.y - 50) * 0.1 + 20}px)`,
+              }}
+            />
+          </div>
         </div>
 
         {/* Tagline */}
@@ -182,19 +194,14 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom Gradient Fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/80 to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
 
-      {/* Interactive Mouse Trail Effect */}
-      {typeof window !== 'undefined' && (
-        <div
-          className="fixed w-6 h-6 bg-[#90D1E8]/20 rounded-full blur-sm pointer-events-none z-0 transition-all duration-300"
-          style={{
-            left: (mousePosition.x * window.innerWidth) / 100 - 12,
-            top: (mousePosition.y * window.innerHeight) / 100 - 12,
-            opacity: mousePosition.x > 0 ? 0.6 : 0,
-          }}
-        />
-      )}
+      {/* Custom CSS for smooth transitions */}
+      <style jsx>{`
+        .logo-container {
+          perspective: 1000px;
+        }
+      `}</style>
     </div>
   );
 }
